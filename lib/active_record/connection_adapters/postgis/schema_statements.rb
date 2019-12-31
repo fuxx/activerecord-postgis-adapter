@@ -35,7 +35,7 @@ module ActiveRecord
         end
 
         # override
-        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L523
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L544
         #
         # returns Postgresql sql type string
         # examples:
