@@ -19,7 +19,6 @@ module ActiveRecord # :nodoc:
         # Override to set the database owner and call setup_gis
         def create(master_established = false)
           establish_master_connection unless master_established
-          extra_config
           connection.create_database(db_config.database, configuration_hash.merge({ postgis_extension: "postgis" }))
           setup_gis
         rescue ::ActiveRecord::StatementInvalid => error
