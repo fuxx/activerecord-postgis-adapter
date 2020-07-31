@@ -50,13 +50,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def ensure_installation_configs
-          if configuration_hash.setup == "default" && !configuration_hash.postgis_extension
-            share_dir = `pg_config --sharedir`.strip rescue "/usr/share"
-            control_file = ::File.expand_path("extension/postgis.control", share_dir)
-            if ::File.readable?(control_file)
-              configuration_hash.postgis_extension = "postgis"
-            end
-          end
+          configuration_hash.postgis_extension = "postgis"
         end
 
         def setup_gis_from_extension
