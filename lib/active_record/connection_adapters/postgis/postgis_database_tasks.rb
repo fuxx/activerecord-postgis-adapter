@@ -10,7 +10,6 @@ module ActiveRecord  # :nodoc:
         end
 
         def setup_gis
-          establish_su_connection
           if extension_names
             setup_gis_from_extension
           end
@@ -20,8 +19,6 @@ module ActiveRecord  # :nodoc:
         # Override to set the database owner and call setup_gis
         def create(master_established = false)
           establish_master_connection unless master_established
-          extra_configs = { "encoding" => encoding }
-          extra_configs["owner"] = username if has_su?
           connection.create_database(db_config.database, configuration_hash.merge(extra_configs))
           setup_gis
         rescue ::ActiveRecord::StatementInvalid => error
@@ -33,49 +30,6 @@ module ActiveRecord  # :nodoc:
         end
 
         private
-
-        # Override to use su_username and su_password
-        def establish_master_connection
-          establish_connection(configuration_hash.merge(
-            :database           => "postgres",
-            :password           => su_password,
-            :schema_search_path => "public",
-            :username           => su_username
-          ))
-        end
-
-        def establish_su_connection
-          establish_connection(configuration_hash.merge(
-            :password           => su_password,
-            :schema_search_path => "public",
-            :username           => su_username
-          ))
-        end
-
-        def username
-          @username ||= configuration_hash.username
-        end
-
-        def quoted_username
-          @quoted_username ||= ::ActiveRecord::Base.connection.quote_column_name(username)
-        end
-
-        def password
-          @password ||= configuration_hash.password
-        end
-
-        def su_username
-          @su_username ||= configuration_hash.su_username || username
-        end
-
-        def su_password
-          @su_password ||= configuration_hash.su_password || password
-        end
-
-        def has_su?
-          @has_su = configuration_hash.include?(:su_username) unless defined?(@has_su)
-          @has_su
-        end
 
         def search_path
           @search_path ||= configuration_hash.schema_search_path.to_s.strip.split(",").map(&:strip)
