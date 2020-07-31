@@ -32,12 +32,12 @@ module ActiveRecord  # :nodoc:
         private
 
         def search_path
-          @search_path ||= configuration_hash.schema_search_path.to_s.strip.split(",").map(&:strip)
+          @search_path ||= configuration_hash[:schema_search_path].to_s.strip.split(",").map(&:strip)
         end
 
         def extension_names
           @extension_names ||= begin
-            extensions = configuration_hash.postgis_extension
+            extensions = configuration_hash[:postgis_extension]
             case extensions
             when ::String
               extensions.split(",")
@@ -50,7 +50,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def ensure_installation_configs
-          configuration_hash.postgis_extension = "postgis"
+          configuration_hash[:postgis_extension] = "postgis"
         end
 
         def setup_gis_from_extension
@@ -61,7 +61,7 @@ module ActiveRecord  # :nodoc:
               end
               connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA topology")
             else
-              if (postgis_schema = configuration_hash.postgis_schema)
+              if (postgis_schema = configuration_hash[:postgis_schema])
                 schema_clause = "WITH SCHEMA #{postgis_schema}"
                 unless schema_exists?(postgis_schema)
                   connection.execute("CREATE SCHEMA #{postgis_schema}")
