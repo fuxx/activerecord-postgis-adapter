@@ -53,7 +53,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def username
-          @username ||= configuration["username"]
+          @username ||= configuration_hash["username"]
         end
 
         def quoted_username
@@ -113,7 +113,7 @@ module ActiveRecord  # :nodoc:
               end
               connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA topology")
             else
-              if (postgis_schema = configuration["postgis_schema"])
+              if (postgis_schema = configuration_hash["postgis_schema"])
                 schema_clause = "WITH SCHEMA #{postgis_schema}"
                 unless schema_exists?(postgis_schema)
                   connection.execute("CREATE SCHEMA #{postgis_schema}")
