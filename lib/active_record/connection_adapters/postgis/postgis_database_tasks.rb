@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module ActiveRecord  # :nodoc:
-  module ConnectionAdapters  # :nodoc:
-    module PostGIS  # :nodoc:
-      class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks  # :nodoc:
+module ActiveRecord # :nodoc:
+  module ConnectionAdapters # :nodoc:
+    module PostGIS # :nodoc:
+      class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks # :nodoc:
         def initialize(db_config)
           super
           ensure_installation_configs
@@ -19,7 +19,8 @@ module ActiveRecord  # :nodoc:
         # Override to set the database owner and call setup_gis
         def create(master_established = false)
           establish_master_connection unless master_established
-          connection.create_database(db_config.database, configuration_hash.merge(extra_configs))
+          extra_config
+          connection.create_database(db_config.database, configuration_hash.merge({ postgis_extension: "postgis" }))
           setup_gis
         rescue ::ActiveRecord::StatementInvalid => error
           if /database .* already exists/ === error.message
@@ -37,20 +38,20 @@ module ActiveRecord  # :nodoc:
 
         def extension_names
           @extension_names ||= begin
-            extensions = configuration_hash[:postgis_extension]
-            case extensions
-            when ::String
-              extensions.split(",")
-            when ::Array
-              extensions
-            else
-              ["postgis"]
-            end
-          end
+                                 extensions = configuration_hash[:postgis_extension]
+                                 case extensions
+                                 when ::String
+                                   extensions.split(",")
+                                 when ::Array
+                                   extensions
+                                 else
+                                   ["postgis"]
+                                 end
+                               end
         end
 
         def ensure_installation_configs
-          configuration_hash[:postgis_extension] = "postgis"
+
         end
 
         def setup_gis_from_extension
